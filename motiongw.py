@@ -1,16 +1,28 @@
 import asyncio
-from motionblinds import MotionGateway
+from motionblinds import MotionGateway, MotionBlind
 from motionblinds import MotionDiscovery
 
 from .. import fhem, generic
 
+
+DEVICE_TYPES_GATEWAY = ["02000001", "02000002"]  # Gateway
+DEVICE_TYPE_BLIND = "10000000"  # Standard Blind
+DEVICE_TYPE_TDBU = "10000001"  # Top Down Bottom Up
+DEVICE_TYPE_DR = "10000002"  # Double Roller
+
+
 class motiongw(generic.FhemModule):
+
+    devtype = {"02000001":"Gateway", "02000002":"Gateway","10000000":"Standard Blind", "10000001":"Top/Down Bottom/Up", "10000002":"Double Roller"}
+
+
     def __init__(self, logger):
         super().__init__(logger)
         self.key = None
         self.IP = None
         self.mode = "sim"
-
+        self.gateway = MotionGateway
+        return
 
     # FHEM FUNCTION
     async def Define(self, hash, args, argsh):
@@ -51,8 +63,12 @@ class motiongw(generic.FhemModule):
                 "options": "live,sim",
             },
             "scan": {
-                # no parameters at the momen
-            }
+                # no parameters at the moment
+            },
+            "key": {
+                "args": ["key"],
+                "params": {"key": {"default": None, "optional": False}},                
+            },
         }
         await self.set_set_config(set_config)
 
@@ -104,20 +120,50 @@ class motiongw(generic.FhemModule):
     async def set_scan(self, hash, params):
         # Either scan for a gateway (no IP defined)
         # Or scan for devices
+        if self.key == None:
+            return "Define key attribute first"
         if self.IP == None:
             self.logger.info(f"calling discover routine")
             mesg = await self.__discover()
+            # normally mesg holds the complete configuration of the discovered gateway/hub
             self.logger.info(mesg)
         else:
             self.logger.info(f"Getting Device info from the gateway")
-            #IP is defined run a GetDevice
+            # IP is defined run a GetDevice
+            # the discovery returns a disct for ecery gateway found
+            # the ip address os the gateway is thus: list(mesg.keys())[0]
+        self.IP = list(mesg.keys())[0]
+        hash['IP']=self.IP
         await fhem.readingsBeginUpdate(hash)
         for key in mesg.keys():
             await fhem.readingsBulkUpdateIfChanged(self.hash, key, "GW IP defined")
+            await fhem.readingsBulkUpdateIfChanged(self.hash, "state", "Discovery done")
             for k in mesg['192.168.1.100']['data']:
-                await fhem.readingsBulkUpdateIfChanged(self.hash, k['mac'], k['deviceType'])
+                await fhem.readingsBulkUpdateIfChanged(self.hash, k['mac'], self.devtype[k['deviceType']])
+                if (k['deviceType'] == '10000000'):
+                    # this is a standard blind, define the  fhempy device
+                    await fhem.CommandDefine(
+                        self.hash,
+                        (
+                            f"motionblinds_{k['mac']} fhempy motionblinds "
+                            f"{self.IP} {self.key} {k['mac']} "
+                            f"{k['deviceType']} "
+                        ),
+                    )
+                elif (k['deviceType'] == '02000002'):
+                # the gateway itself
+                    self.gateway = MotionGateway(ip = self.IP, key = self.key)
+                    hash['mac'] = k['mac']
+
+
             await fhem.readingsEndUpdate(hash, 1)
 
+    async def set_key(self, hash, params):
+        # attribute was set to self._key_interval
+        # you can use self._attr_interval already with the new variable
+        hash['key']=params['key']
+        self.key = params['key']
+        pass
 
     async def set_mode(self, hash, params):
         # user can specify mode as mode=eco or just eco as argument
@@ -125,3 +171,4 @@ class motiongw(generic.FhemModule):
         mode = params["mode"]
         await fhem.readingsSingleUpdate(hash, "mode", mode, 1)
         self.mode = mode
+
