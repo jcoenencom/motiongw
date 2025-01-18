@@ -30,7 +30,7 @@ or run the set scan from the device
 
 Once the scan is finished, the gateway displays the devices found in the readings, for each blind discovered, a motionblinds device will be automatically created and can be found in the room fhempy
 
-![gateway reporting the devices](images/ggateway.pbg)
+![gateway reporting the devices](images/gateway.png)
 
 the Blinds will be named motionblinds_[mac address as reported]
 
@@ -38,4 +38,4 @@ the Blinds will be named motionblinds_[mac address as reported]
 
 Room fhempy with the created elements
 
-![Room](images/room_fhempy.png
+![Room](images/room_fhempy.png)
