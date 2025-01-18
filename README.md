@@ -2,6 +2,8 @@
 
 ## An FHEMPY module to make use of motionblinds python library
 
+After installing the motionblinds library (as explained in the motionblinds fhempy module (make sure that the __init__.py of the library is modified).
+
 ### this module is intended to interface with a motionblind HUB
 
 The motionblind HUB maintains the available binds it can control.
