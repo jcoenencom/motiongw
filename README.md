@@ -15,3 +15,13 @@ this module should be able to
 +  live scan of the network to detect the gateway/hub
 
   
+## Use
+
+when installed, define the gateway to fhem 
+  define mgw fhempy motiongw
+
+Change mode to live and enter the gateway key (via the set)
+
+  Set mgw scan 
+
+or run the set scan from the device
