@@ -19,14 +19,14 @@ this module should be able to
 
 when installed, define the gateway to fhem 
 
-  define mgw fhempy motiongw
+    define mgw fhempy motiongw
 
 Change mode to live and enter the gateway key (via the set)
 
-  Set mgw scan 
+    Set mgw scan 
 
 or run the set scan from the device
 
 Once the scan is finished, the gateway displays the devices found in the readings, for each blind discovered, a motionblinds device will be automatically created and can be found in the room fhempy
 
-the Blinds will be named motionblinds_<mac address as reported>
+the Blinds will be named motionblinds_[mac address as reported]
