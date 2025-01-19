@@ -140,7 +140,7 @@ class motiongw(generic.FhemModule):
             await fhem.readingsBeginUpdate(hash)
             for key in mesg.keys():
                 await fhem.readingsBulkUpdateIfChanged(self.hash, "state", "Discovery done")
-                # define each device known to the HUB as motionblinds instance of fhem
+                # define each device known to the HUB as motionblind instance of fhem
                 for k in mesg[self.IP]['data']:
                     await fhem.readingsBulkUpdateIfChanged(self.hash, k['mac'], self.devtype[k['deviceType']])
                     if (k['deviceType'] == '10000000'):
@@ -148,7 +148,7 @@ class motiongw(generic.FhemModule):
                         await fhem.CommandDefine(
                             self.hash,
                             (
-                                f"motionblind_{k['mac']} fhempy motionblinds "
+                                f"motionblind_{k['mac']} fhempy motionblind "
                                 f"{self.IP} {self.key} {k['mac']} "
                                 f"{k['deviceType']} "
                             ),
@@ -167,7 +167,7 @@ class motiongw(generic.FhemModule):
                 await fhem.CommandDefine(
                     self.hash,
                     (
-                        f"motionblinds_{blind.mac} fhempy motionblind "
+                        f"motionblind_{blind.mac} fhempy motionblind "
                         f"{self.IP} {self.key} {blind.mac} "
                         f"{blind.device_type} "
                     ),
