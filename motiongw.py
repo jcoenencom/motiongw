@@ -167,7 +167,7 @@ class motiongw(generic.FhemModule):
                 await fhem.CommandDefine(
                     self.hash,
                     (
-                        f"motionblinds_{blind.mac} fhempy motionblinds "
+                        f"motionblinds_{blind.mac} fhempy motionblind "
                         f"{self.IP} {self.key} {blind.mac} "
                         f"{blind.device_type} "
                     ),
