@@ -24,17 +24,11 @@ class motiongw(generic.FhemModule):
 
     # define the attributes
 
-        self._attr_list = {
-            "key": {"default": None},
-            "IP": {"default": None},
-        }
-
-        await self.set_attr_config(self._attr_list)
         await self.set_icon("it_router")
-
+        await fhem.CommandAttr(self.hash, self.hash["NAME"] + " verbose 5")
 
     # check the defined attributes in the define command
-        if len(args) > 5:
+        if len(args) >= 4:
             self.IP = args[3]
             hash["IP"]= args[3]
             self.logger.info("Setting IP address")
@@ -46,7 +40,7 @@ class motiongw(generic.FhemModule):
 
         
     
-        self.logger.info(f"Define test key {self.IP}")
+        self.logger.info(f"Define test key {self.key}")
 
         set_config = {
             "mode": {
@@ -115,7 +109,7 @@ class motiongw(generic.FhemModule):
         # sim mode, populated devices in gw instance
         # live request the devlist to the gateway
         self.gw = MotionGateway(ip=self.IP, key=self.key)
-        self.logger.debug(f"Internal getDevList: instanciate gw IP=(self.IP) KEY=(self.key)")
+        self.logger.debug(f"Internal getDevList: instanciate gw IP={self.IP} KEY={self.key}")
 
         if self.mode == "sim":
             obj1 = MotionBlind(gateway=self.gw, mac='123456789', device_type='RollerBlind')
@@ -129,7 +123,7 @@ class motiongw(generic.FhemModule):
             self.logger.debug(f"Internal getDevList: live interogate gw")
             self.gw.GetDeviceList()
             self.gw.Update()
-            return
+            return 
         
     async def set_scan(self, hash, params):
         # Perform a discovery calling internal __discover routine that discriminate between sim and live mode
@@ -166,21 +160,20 @@ class motiongw(generic.FhemModule):
                 await fhem.readingsEndUpdate(hash, 1)
         elif self.key != None :
             # IP and key are set we can do a GetDeviceList
-            self.logger.info(f"Getting Device info from the gateway (self.IP)")
-            mesg = await self.__discover()
+            self.logger.info(f"Getting Device info from the gateway {self.IP}")
+            mesg = await self.__getDevList()
             for blind in self.gw.device_list.values():
-                self.logger.debug(f"gw scan: device_list.value loop: device mac (blind.mac)")
+                self.logger.debug(f"gw scan: device_list.value loop: issuing fhem define motionblinds_{blind.mac} fhempy motionblinds {self.IP} {self.key} {blind.mac} {blind.device_type}")
                 await fhem.CommandDefine(
                     self.hash,
                     (
-                        f"motionblinds_{blind.mac}) fhempy motionblinds "
+                        f"motionblinds_{blind.mac} fhempy motionblinds "
                         f"{self.IP} {self.key} {blind.mac} "
                         f"{blind.device_type} "
                     ),
                 )
         else:
             return "IP is defined but no access key required by gateway communication, please define one"
-
 
     async def set_key(self, hash, params):
         # attribute was set to self._key_interval
