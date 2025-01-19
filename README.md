@@ -8,7 +8,7 @@ After installing the motionblinds library (as explained in the motionblinds fhem
 
 The motionblind HUB maintains the available binds it can control.
 this module should be able to
-+ if IP address and key of the hub specified, it connects to the HUB and request hte list of known devices
++ if IP address and key of the hub specified, it connects to the HUB and request the list of known devices
 + if the IP address of the hub is not specified, it search for a HUB and defines it accordingly
 
 
@@ -21,6 +21,10 @@ this module should be able to
 
 when installed, define the gateway to fhem 
 
+#### if IP address and acces key are known
+    define mgw fhempy motiongw IP_address access_key
+
+#### if IP address is unknown, it will still be required to enter the access_eky later on
     define mgw fhempy motiongw
 
 
