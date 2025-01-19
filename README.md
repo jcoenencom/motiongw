@@ -24,7 +24,7 @@ when installed, define the gateway to fhem
 #### if IP address and acces key are known
     define mgw fhempy motiongw IP_address access_key
 
-#### if IP address is unknown, it will still be required to enter the access_eky later on
+#### if IP address is unknown, it will still be required to enter the access_key later on
     define mgw fhempy motiongw
 
 
