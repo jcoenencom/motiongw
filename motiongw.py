@@ -38,7 +38,6 @@ class motiongw(generic.FhemModule):
             self.IP = args[3]
             hash["IP"]= args[3]
             self.logger.info("Setting IP address")
-            return "Usage: define NAME fhempy test IP"
             self.key = args[4]
             hash["key"] = args[4]
 
@@ -179,6 +178,9 @@ class motiongw(generic.FhemModule):
                         f"{blind.device_type} "
                     ),
                 )
+        else:
+            return "IP is defined but no access key required by gateway communication, please define one"
+
 
     async def set_key(self, hash, params):
         # attribute was set to self._key_interval
