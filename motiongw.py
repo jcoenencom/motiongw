@@ -148,7 +148,7 @@ class motiongw(generic.FhemModule):
                         await fhem.CommandDefine(
                             self.hash,
                             (
-                                f"motionblinds_{k['mac']} fhempy motionblinds "
+                                f"motionblind_{k['mac']} fhempy motionblinds "
                                 f"{self.IP} {self.key} {k['mac']} "
                                 f"{k['deviceType']} "
                             ),
@@ -163,7 +163,7 @@ class motiongw(generic.FhemModule):
             self.logger.info(f"Getting Device info from the gateway {self.IP}")
             mesg = await self.__getDevList()
             for blind in self.gw.device_list.values():
-                self.logger.debug(f"gw scan: device_list.value loop: issuing fhem define motionblinds_{blind.mac} fhempy motionblinds {self.IP} {self.key} {blind.mac} {blind.device_type}")
+                self.logger.debug(f"gw scan: device_list.value loop: issuing fhem define motionblind_{blind.mac} fhempy motionblind {self.IP} {self.key} {blind.mac} {blind.device_type}")
                 await fhem.CommandDefine(
                     self.hash,
                     (
