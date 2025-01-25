@@ -14,7 +14,7 @@ class motiongw(generic.FhemModule):
         super().__init__(logger)
         self.key = None
         self.IP = None
-        self.mode = "sim"
+        self.mode = "live"
         self.gateway = MotionGateway
         return
 
@@ -28,7 +28,7 @@ class motiongw(generic.FhemModule):
         await fhem.CommandAttr(self.hash, self.hash["NAME"] + " verbose 5")
 
     # check the defined attributes in the define command
-        if len(args) >= 4:
+        if len(args) > 3:
             self.IP = args[3]
             hash["IP"]= args[3]
             self.logger.info("Setting IP address")
@@ -46,7 +46,7 @@ class motiongw(generic.FhemModule):
             "mode": {
                 "args": ["mode"],
                 "argsh": ["mode"],
-                "params": {"mode": {"default": "sim", "optional": False}},
+                "params": {"mode": {"default": "live", "optional": False}},
                 "options": "live,sim",
             },
             "scan": {
@@ -56,10 +56,11 @@ class motiongw(generic.FhemModule):
                 "args": ["key"],
                 "params": {"key": {"default": None, "optional": False}},                
             },
+            
         }
         await self.set_set_config(set_config)
 
-        await fhem.readingsSingleUpdate(hash, "mode", "sim", 1)
+        await fhem.readingsSingleUpdate(hash, "mode", "live", 1)
 
         await fhem.readingsBeginUpdate(hash)
         await fhem.readingsBulkUpdateIfChanged(self.hash, "state", "defined")
@@ -155,8 +156,10 @@ class motiongw(generic.FhemModule):
                         )
                     elif (k['deviceType'] == '02000002'):
                     # the gateway itself
+                        self.logger.debug("gateway detected")
                         self.gateway = MotionGateway(ip = self.IP, key = self.key)
                         hash['mac'] = k['mac']
+                        await fhem.readingsBulkUpdateIfChanged(self.hash, "mac", k['mac'])
                 await fhem.readingsEndUpdate(hash, 1)
         elif self.key != None :
             # IP and key are set we can do a GetDeviceList
@@ -181,6 +184,9 @@ class motiongw(generic.FhemModule):
         hash['key']=params['key']
         self.key = params['key']
         pass
+    
+        
+
 
     async def set_mode(self, hash, params):
         # user can specify mode as mode=eco or just eco as argument
