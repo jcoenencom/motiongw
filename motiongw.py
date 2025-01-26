@@ -194,3 +194,4 @@ class motiongw(generic.FhemModule):
         mode = params["mode"]
         await fhem.readingsSingleUpdate(hash, "mode", mode, 1)
         self.mode = mode
+        
