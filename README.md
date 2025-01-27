@@ -40,7 +40,7 @@ Once the scan is finished, the gateway displays the devices found in the reading
 
 the Blinds will be named motionblinds_[mac address as reported]
 
-![Blind fhem device](images/blind.png)
+![Blind fhem device](images/motionblind.png)
 
 Room fhempy with the created elements
 
