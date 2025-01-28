@@ -44,4 +44,4 @@ the Blinds will be named motionblinds_[mac address as reported]
 
 Room fhempy with the created elements
 
-![Room](images/fhempy_room.png)
+![Room](images/fhempy room.png)
